@@ -15,9 +15,18 @@ require('./js-foundation/02-destructuring.js');
 
 const {getPokemonByID} = require('./js-foundation/06-promises.js');
 
-getPokemonByID(1, (pokemon) => {
+
+const info = getPokemonByID(2).then((pokemon) => {
     console.log(pokemon);
-})
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    })
+    .finally(() => {
+        console.log('Finally');
+    });
+
+
 
 
 
