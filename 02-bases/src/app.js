@@ -27,6 +27,8 @@ const info = getPokemonByID(2).then((pokemon) => {
     });
 
 
+//using axios
+
 
 
 
