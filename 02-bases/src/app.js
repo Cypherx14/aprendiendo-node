@@ -13,21 +13,25 @@ require('./js-foundation/02-destructuring.js');
 // });
 
 
-const {getPokemonByID} = require('./js-foundation/06-promises.js');
+// const {getPokemonByID} = require('./js-foundation/06-promises.js');
 
 
-const info = getPokemonByID(2).then((pokemon) => {
-    console.log(pokemon);
-    })
-    .catch((error) => {
-        console.log('Error: ', error);
-    })
-    .finally(() => {
-        console.log('Finally');
-    });
+// const info = getPokemonByID(2).then((pokemon) => {
+//     console.log(pokemon);
+//     })
+//     .catch((error) => {
+//         console.log('Error: ', error);
+//     })
+//     .finally(() => {
+//         console.log('Finally');
+//     });
 
+//logger
+const {buildLogger} = require('./plugins');
 
-//using axios
+const logger = buildLogger('app.js');
+
+logger.log('This is a log message');
 
 
 
