@@ -1,8 +1,0 @@
-{"level":"info","message":"This is a log message","service":"user-service"}
-{"level":"info","message":"This is a log message"}
-{"level":"info","message":"This is a log message","service":"app.js"}
-{"level":"info","message":"This is a log message","service":"app.js"}
-{"level":"info","message":"This is a log message","service":"app.js"}
-{"level":"info","message":"This is a log message","service":"app.js"}
-{"level":"info","message":"This is a log message","service":"app.js"}
-{"level":"info","message":"This is a log message","service":"app.js"}
