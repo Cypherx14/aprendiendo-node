@@ -1,10 +1,5 @@
 const axios = require('axios');
 
-const buildHttpClient = () => {
-    
-};
-
-
 //changing fetch to axios
 const httpClientPlugin = {
     get: async (url) => {
