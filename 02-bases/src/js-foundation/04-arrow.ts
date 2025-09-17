@@ -1,16 +1,21 @@
 
+interface IUser{   
+    id: number;
+    name: string;
+}
 
-const users = [
+
+const users: IUser[] = [
     { id: 1, name: 'Alice' },
     { id: 2, name: 'Bob' },
     { id: 3, name: 'Charlie' }
 ];
 
-const getUserById = (id, callback) => {
+export const getUserById = (id:number, callback: (err?:string, user?:IUser)=> void) => {
     const user = users.find(user => user.id ===id);
     
     //using tern to avoid else
-    user ? callback(null, user) : callback(`USER WITH id ${id} not found`);
+    user ? callback(undefined, user) : callback(`USER WITH id ${id} not found`);
     
     // if(!user){
     //     return callback(`USER WITH id ${id} not found`);
@@ -20,6 +25,3 @@ const getUserById = (id, callback) => {
 
 
 
-module.exports = { 
-    getUserById 
-};
