@@ -1,5 +1,5 @@
 import { getAge } from '../../src/plugins/get-age-plugin';
-import { buildLogger } from '../../src/plugins/logger.plugin';
+
 
 
 describe('plugins/get-age.test.ts', () => {
