@@ -1,6 +1,8 @@
-
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 
-export const yarg = { ...yargs(hideBin(process.argv)).parseSync() };
+const argv = yargs(hideBin(process.argv)).parseSync();
+
+export const yargOptions = {...argv};
+
