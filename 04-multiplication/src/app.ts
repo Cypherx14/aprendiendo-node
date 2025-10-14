@@ -1,9 +1,16 @@
 import { yargOptions } from "./config/plugins/yargs.plugin";
 
-console.log(process.argv);
+
+// async function main(){
+(async () => {
+    await main();
+    console.log('End app');
+})();
 
 
-
-console.log(yargOptions);
-
+async function main() {
+    console.log('Main executed');
+    console.log(yargOptions);
+    
+}
 
