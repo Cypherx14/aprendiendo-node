@@ -21,6 +21,15 @@ const argv = yargs(hideBin(process.argv))
         default: false,
         describe: 'Show the table in console'
     })
+    .check((argv,options)=>{
+        if(isNaN(argv.b)){
+            throw new Error('The base must be a number');
+        }
+        
+
+        throw new Error('Error in the yargs options');
+        // return true;
+    })
     .parseSync();
 
 export const yargOptions = {...argv};
