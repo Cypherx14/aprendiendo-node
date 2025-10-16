@@ -1,4 +1,5 @@
 import { yargOptions } from "./config/plugins/yargs.plugin";
+import { ServerApp } from "./presentation/server-app";
 
 
 // async function main(){
@@ -9,8 +10,7 @@ import { yargOptions } from "./config/plugins/yargs.plugin";
 
 
 async function main() {
-    console.log('Main executed');
-    console.log(yargOptions);
-    
+    const { b:base, l:limit, s:showTable } = yargOptions;
+    ServerApp.run({ base, limit, showTable});
 }
 

@@ -1,0 +1,27 @@
+
+export interface ICreateTableUseCase {
+    execute:(option: CreateTableOptions) => string;
+}
+
+export interface CreateTableOptions {
+    base:number;
+    limit?:number;   
+}
+
+
+export class CreateTable implements ICreateTableUseCase {
+
+
+    constructor() {
+        // DI - dependecy injection
+    }
+
+    //function to execute the use case
+    execute({ base, limit = 10 }: CreateTableOptions): string {
+        let outputMessage = '';
+        for (let index = 1; index <= limit; index++) {
+            outputMessage += `${base} x ${index} = ${base * index}\n`;
+        }
+        return outputMessage;
+    };
+}

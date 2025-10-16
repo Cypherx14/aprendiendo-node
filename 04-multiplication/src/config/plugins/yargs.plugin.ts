@@ -25,10 +25,9 @@ const argv = yargs(hideBin(process.argv))
         if(isNaN(argv.b)){
             throw new Error('The base must be a number');
         }
-        
-
-        throw new Error('Error in the yargs options');
-        // return true;
+    
+        // throw new Error('Error in the yargs options');
+        return true;
     })
     .parseSync();
 
