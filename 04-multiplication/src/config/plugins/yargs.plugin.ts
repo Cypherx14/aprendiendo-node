@@ -20,6 +20,16 @@ const argv = yargs(hideBin(process.argv))
         type: 'boolean',
         default: false,
         describe: 'Show the table in console'
+    }).option('n',{
+        alias: 'name',
+        type: 'string',
+        default: 'multiplication-table',
+        describe: 'Name of the file'
+    }).option('d',{
+        alias: 'destination',
+        type: 'string',
+        default: 'outputs',
+        describe: 'Destination of the file'
     })
     .check((argv,options)=>{
         if(isNaN(argv.b)){
