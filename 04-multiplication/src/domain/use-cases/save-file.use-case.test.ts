@@ -101,4 +101,15 @@ describe('SaveFile with fs mocked', () => {
 
         expect(result).toBe(false);
     });
+    test('should return false if file could not be created', () => {
+        const { SaveFile } = require('./save-file.use-case'); // Importa después del mock
+        const saveFile = new SaveFile();
+        const result = saveFile.execute({
+            fileContent: 'some content',
+            destination: 'fail-folder',
+            fileName: 'test'
+        });
+
+        expect(result).toBe(false);
+    });
 });
