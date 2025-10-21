@@ -23,6 +23,7 @@ describe('SaveFile Use Case', () => {
     });
 
 
+
     test('should save file with default values', () => {
         const saveFile = new SaveFile();
         const filePath = 'outputs/tabla-table.txt';
@@ -51,5 +52,53 @@ describe('SaveFile Use Case', () => {
         expect(fileExist).toBe(true);
         expect(fileContent).toBe(customOptions.fileContent);
 
+    });
+
+    // test('should return false if directory could not be created', () => {
+
+    //     // const saveFile = new SaveFile();
+    //     // const mkdirSpy = jest.spyOn(fs, 'mkdirSync').mockImplementationOnce(() => {
+    //     //     throw new Error('This is a custom error message, failed to create directory'); //sobreescribo el comportamiento para que lance un error
+    //     // });
+    //     // mkdirSpy.mockRestore(); //restauro el comportamiento original del metodo
+
+    //     /* CON SPY ON NO FUNCIONA CREAR CON MOCK*/
+    //     jest.mock('fs', () => ({
+    //         mkdirSync: jest.fn(() => { throw new Error('Simulated mkdirSync error'); }),
+    //         writeFileSync: jest.fn()
+    //     }));
+    //     const { SaveFile } = require('./save-file.use-case');
+    //     const saveFile = new SaveFile();
+    //     const result = saveFile.execute(customOptions);
+    //     expect(result).toBe(false);
+
+    //     jest.unmock('fs'); // Restaurar el módulo original después del test
+
+    // });
+});
+
+describe('SaveFile with fs mocked', () => {
+    beforeAll(() => {
+        jest.resetModules(); // Limpia el cache de módulos
+        jest.mock('fs', () => ({
+            mkdirSync: jest.fn(() => { throw new Error('Simulated mkdir error'); }),
+            writeFileSync: jest.fn()
+        }));
+    });
+
+    afterAll(() => {
+        jest.unmock('fs');
+    });
+
+    test('should return false if mkdirSync fails', () => {
+        const { SaveFile } = require('./save-file.use-case'); // Importa después del mock
+        const saveFile = new SaveFile();
+        const result = saveFile.execute({
+            fileContent: 'some content',
+            destination: 'fail-folder',
+            fileName: 'test'
+        });
+
+        expect(result).toBe(false);
     });
 });

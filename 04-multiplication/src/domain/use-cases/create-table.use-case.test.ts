@@ -29,8 +29,5 @@ describe('CreateTableUseCase', () => {
 
         expect(table).toContain('3 x 20 = 60');
         expect(rows).toBe(options.limit);
-
-
-
     });
 });

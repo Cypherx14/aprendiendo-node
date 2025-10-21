@@ -1,0 +1,198 @@
+Gracias por compartir el error. Lo que te está pasando es común: **estás usando `jest.mock` dinámicamente dentro del `test()`**, pero **Jest no aplica el mock a tiempo porque el módulo `SaveFile` ya fue importado antes** y ya resolvió el `fs` original.
+
+---
+
+## ⚠️ Problema clave:
+
+> `jest.mock()` **debe ejecutarse antes de importar el módulo que lo usa** (en este caso, `SaveFile`).
+
+---
+
+## ✅ Solución paso a paso
+
+### 1. Usa `jest.mock('fs')` al principio del archivo (nivel global)
+
+Tu archivo de test debe verse así:
+
+```ts
+// 👇 Mockeamos el módulo fs ANTES de cualquier import que lo use
+jest.mock('fs');
+
+import * as fs from 'fs'; // El mockeado
+import { SaveFile } from './save-file.use-case';
+
+describe('SaveFile Use Case', () => {
+    const customOptions = {
+        fileContent: 'Custom Content',
+        destination: 'custom-outputs',
+        fileName: 'custom-table-name'
+    };
+
+    const customFilePath = `${customOptions.destination}/tabla-${customOptions.fileName}.txt`;
+
+    afterEach(() => {
+        jest.resetAllMocks(); // Limpia todos los mocks entre tests
+    });
+
+    afterAll(() => {
+        jest.unmock('fs'); // Restaurar el módulo original después de todos los tests
+    });
+
+    test('should return false if directory could not be created', () => {
+        // Simulamos error en mkdirSync
+        (fs.mkdirSync as jest.Mock).mockImplementation(() => {
+            throw new Error('Simulated mkdirSync error');
+        });
+
+        const saveFile = new SaveFile();
+        const result = saveFile.execute(customOptions);
+
+        expect(result).toBe(false);
+    });
+});
+```
+
+---
+
+## ✅ Recomendaciones clave
+
+* `jest.mock('fs')` **va antes de importar `SaveFile`** porque ese módulo ya importa `fs`.
+* `fs.mkdirSync` es un mock, pero TypeScript puede necesitar que lo "conviertas" a `jest.Mock` con un cast como:
+
+  ```ts
+  (fs.mkdirSync as jest.Mock).mockImplementation(...)
+  ```
+
+---
+
+## ✅ Alternativa avanzada (usando `require` dinámico)
+
+Si no quieres que el mock afecte a todos los tests, puedes hacer el mock dentro de un bloque `describe`, pero **importando dinámicamente `SaveFile` después de mockear `fs`**. Ejemplo:
+
+```ts
+describe('SaveFile with fs mocked', () => {
+    beforeAll(() => {
+        jest.resetModules(); // Limpia el cache de módulos
+        jest.mock('fs', () => ({
+            mkdirSync: jest.fn(() => { throw new Error('Simulated mkdir error'); }),
+            writeFileSync: jest.fn()
+        }));
+    });
+
+    afterAll(() => {
+        jest.unmock('fs');
+    });
+
+    test('should return false if mkdirSync fails', () => {
+        const { SaveFile } = require('./save-file.use-case'); // Importa después del mock
+        const saveFile = new SaveFile();
+        const result = saveFile.execute({
+            fileContent: 'some content',
+            destination: 'fail-folder',
+            fileName: 'test'
+        });
+
+        expect(result).toBe(false);
+    });
+});
+
+
+
+¡Me alegra que te sirviera la alternativa con `require` dinámico! Ahora te explico bien qué son los `describe()` y cómo usarlos, incluyendo si puedes tener varios en un mismo archivo. Vamos paso a paso:
+
+---
+
+## 🧪 ¿Qué es `describe()` en Jest?
+
+`describe()` es una **función de agrupación de tests**. Se usa para organizar varios `test()` (o `it()`) relacionados bajo una misma "sección" o "suite" de pruebas.
+
+### 📌 Sintaxis básica:
+
+```ts
+describe('Nombre del grupo de tests', () => {
+    test('caso 1', () => { ... });
+    test('caso 2', () => { ... });
+});
+```
+
+### ✅ ¿Qué hace?
+
+* Agrupa tests relacionados lógicamente.
+* Permite usar `beforeAll`, `beforeEach`, `afterAll`, `afterEach` **dentro del grupo**.
+* Mejora la organización y legibilidad de tus pruebas.
+
+---
+
+## ✅ ¿Puedo tener múltiples `describe()` en el mismo archivo?
+
+**¡Sí, absolutamente!** De hecho, es una **buena práctica** cuando quieres separar casos de prueba por contexto o condiciones diferentes.
+
+### Ejemplo con varios `describe()`:
+
+```ts
+describe('SaveFile - comportamiento normal', () => {
+    test('debería guardar archivo con valores por defecto', () => { ... });
+    test('debería guardar archivo con valores personalizados', () => { ... });
+});
+
+describe('SaveFile - errores simulados', () => {
+    beforeAll(() => {
+        jest.resetModules();
+        jest.mock('fs', () => ({
+            mkdirSync: jest.fn(() => { throw new Error('mkdir failed'); }),
+            writeFileSync: jest.fn()
+        }));
+    });
+
+    afterAll(() => {
+        jest.unmock('fs');
+    });
+
+    test('debería devolver false si mkdirSync falla', () => {
+        const { SaveFile } = require('./save-file.use-case');
+        const saveFile = new SaveFile();
+        const result = saveFile.execute({
+            fileContent: 'test',
+            destination: 'fail-folder',
+            fileName: 'fail'
+        });
+        expect(result).toBe(false);
+    });
+});
+```
+
+---
+
+## 🧠 ¿Por qué usar múltiples `describe()`?
+
+* ✅ Separas **funcionalidad normal** de **comportamiento bajo errores**.
+* ✅ Puedes aplicar diferentes configuraciones (`mock`, `setup`) en cada grupo.
+* ✅ Mejora la estructura del test cuando crece.
+
+---
+
+## 📌 Tip adicional
+
+En Jest, puedes incluso anidar `describe()` dentro de otros:
+
+```ts
+describe('SaveFile', () => {
+    describe('cuando todo funciona bien', () => {
+        test('...', () => {});
+    });
+
+    describe('cuando mkdirSync falla', () => {
+        test('...', () => {});
+    });
+});
+```
+
+---
+
+¿Te gustaría que te ayude a refactorizar tus tests actuales con múltiples `describe()` bien estructurados?
+
+```
+
+---
+
+¿Quieres que también forcemos un error en `writeFileSync` con el mismo enfoque?
